@@ -1,0 +1,11 @@
+AllCops:
+  Exclude:
+    - "config/**/*"
+    - "db/**/*"
+    - "bin/*"
+    - "node_modules/**/*"
+Lint/AmbiguousBlockAssociation:
+  Exclude:
+    - "spec/**/*"
+Metrics/LineLength:
+  Max: 120
