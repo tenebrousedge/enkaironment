@@ -27,4 +27,5 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'minitest', '~> 5.0'
   spec.add_development_dependency 'rake', '~> 10.0'
   spec.add_dependency 'highline', '~> 2.0.0'
+  spec.add_dependency 'i18n', '~> 1.1.1'
 end
