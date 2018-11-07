@@ -1,0 +1,3 @@
+es:
+  ask_username: 'Por favor ingrese un nombre de usuario compatible con POSIX.'
+  ask_password: 'Por favor, introduzca una contraseña'
