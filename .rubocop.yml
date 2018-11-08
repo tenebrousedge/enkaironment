@@ -4,8 +4,11 @@ AllCops:
     - "db/**/*"
     - "bin/*"
     - "node_modules/**/*"
+  TargetRubyVersion: 2.5
 Lint/AmbiguousBlockAssociation:
   Exclude:
     - "spec/**/*"
 Metrics/LineLength:
   Max: 120
+Layout/TrailingWhitespace:
+  AllowInHeredoc: true
