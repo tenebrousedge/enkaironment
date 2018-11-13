@@ -1,5 +1,7 @@
 # Enkaironment
 
+So, yes, this could have been written using some configuration management tool. I don't care. I have one itch I need scratched, and it's actually pretty simple. That's not necessarily a good excuse, so this had better be a quick project.
+
 Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/enkaironment`. To experiment with that code, run `bin/console` for an interactive prompt.
 
 TODO: Delete this and the text above, and describe your gem

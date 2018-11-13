@@ -34,4 +34,10 @@ describe Enkaironment::CLI, 'It handles CLI interactions' do
 valid (must match /^(?!-)[\\w.-]+$/).\n?  "
     assert_equal(expected, @term.output.string)
   end
+
+  it 'can be invoked from the command line' do
+  end
+
+  it 'accepts arguments from the command line' do
+  end
 end
