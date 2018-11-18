@@ -12,27 +12,14 @@ module Enkaironment
   class Install < Thor
     include Thor::Actions
 
-    desc 'git', 'installs git-all'
-    # installs git
-    def git
-      invoke 'apt_update'
-      system 'apt install -y git-all'
-    end
-
-    desc 'curl', 'install curl'
-    # installs curl
-    def curl
-      invoke 'apt_update'
-      system 'apt install -y curl'
-    end
-
-    desc 'zsh', 'install zsh (and make it the default)'
-    # installs zsh
-    # @param username [String] username to set shell default for
-    def zsh(username = self.username)
-      invoke 'apt_update'
-      system 'apt install -y zsh'
-      system %(chsh -s `which zsh` #{username}) if user_exists?(username)
+    desc 'apt_update', 'runs apt update (as a task, so that other tasks can invoke it)', hide: true
+    # runs apt update
+    # theoretically this could be an 'update sources' method, in order to
+    # support multiple OSes. Other install tasks could be written such that
+    # they added items to an install list, similar to how `invoke` works.
+    # I don't currently have any intention of doing this.
+    def apt_update
+      system 'apt update'
     end
 
     no_commands do
@@ -45,11 +32,76 @@ module Enkaironment
             File.symlink("#{preztodir}/runcoms/#{rcfile}", "#{userdir}/.#{rcfile}")
           end
       end
+
+      # install command
+      # @param packages [Array<String>] one or more packages to install
+      def install(*packages)
+        invoke 'install apt_update'
+        system %(DEBIAN_FRONTEND=noninteractive apt -y install #{packages.join(' ')})
+      end
     end
-    desc 'prezto', 'install prezto'
+
+    desc 'git', 'installs git-all'
+    # installs git
+    def git
+      install 'git-all'
+    end
+
+    desc 'curl', 'install curl'
+    # installs curl
+    def curl
+      install 'curl'
+    end
+
+    desc 'ruby_build_deps', 'installs build dependencies for Ruby (rbenv-build needs these)'
+    # Installs ruby build dependencies
+    def ruby_build_deps
+      install %w[autoconf bison build-essential libssl-dev libyaml-dev
+                 libreadline6-dev zlib1g-dev libncurses5-dev libffi-dev libgdbm5 libgdbm-dev]
+    end
+
+    desc 'docker', 'installs docker'
+    def docker
+      invoke 'install curl'
+      install %w[apt-transport-https ca-certificates software-properties-common]
+      system 'curl -fsSL https://download.docker.com/libux/ubuntu/gpg | apt-key add -'
+      system 'add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu bionic stable"'
+      apt_update # hard requirement
+      install 'docker-ce'
+    end
+
+    desc 'docker-compose', 'installs docker-compose'
+    method_option aliases: 'docker-compose'
+    # Installs docker-compose
+    def docker_compose
+      filename = '/usr/local/bin/docker-compose'
+      system format(%(curl -L \
+      "https://github.com/docker/compose/releases/download/%<version>s/docker-compose-Linux-x86_64" -o %<filename>s
+      ), version: '1.23.0-rc3', filename: filename) # easier to find/change when there's a label
+      File.chmod(filename, 0o755)
+    end
+
+    desc 'neovim', 'installs neovim'
+    # Installs neovim from official PPA
+    def neovim
+      system 'add-apt-repository ppa:neovim-ppa/stable'
+      apt_update
+      install 'neovim'
+    end
+
+    class_option :username, type: :string
+    desc 'zsh [USERNAME]', 'install zsh (and make it the default)'
+    # installs zsh
+    # @param username [String] username to set shell default for
+    def zsh(username)
+      install 'zsh'
+      system %(chsh -s `which zsh` #{username}) if user_exists?(username)
+    end
+
+    desc 'prezto [USERNAME]', 'install prezto'
     # installs prezto
     # @param username [String] prezto will be installed to the home directory corresponding to this username
-    def prezto(username = self.username)
+    def prezto(username)
       return unless user_exists?(username)
 
       user = Etc.getpwnam(username)
@@ -60,18 +112,9 @@ module Enkaironment
       File.chown(user.uid, user.gid, *Dir["#{user.dir}/.z*", "#{preztodir}/**"])
     end
 
-    desc 'ruby build deps', 'installs build dependencies for Ruby (rbenv-build needs these)'
-    # Installs ruby build dependencies
-    def ruby_build_deps
-      invoke 'apt_update'
-      system 'apt install -y autoconf bison build-essential libssl-dev \
-      libyaml-dev libreadline6-dev zlib1g-dev libncurses5-dev libffi-dev \
-      libgdbm5 libgdbm-dev'
-    end
-
-    desc 'rbenv', 'installs rbenv to a given user\'s home directory'
+    desc 'rbenv [USERNAME]', 'installs rbenv to a given user\'s home directory'
     # Installs rbenv to a given user's home directory
-    def rbenv(username = self.username)
+    def rbenv(username)
       return unless user_exists?(username)
 
       user = Etc.getpwnam(username)
@@ -82,31 +125,24 @@ module Enkaironment
         map { |filename| append_to_file(filename, rbenv_shim) }
     end
 
-    desc 'rbenv-build', 'installs rbenv-build'
+    desc 'rbenv-build [USERNAME]', 'installs rbenv-build'
     method_option aliases: 'rbenv-build'
     # installs rbenv-build
     # @todo write some sort of wrapper method for requiring the username to exist
     # @param username [String]
-    def rbenv_build(username = self.username)
+    def rbenv_build(username)
       return unless user_exists?(username)
 
-      invoke 'install:git'
-      %w[install:rbenv install:ruby_build_deps].map(&method(:invoke))
+      %w[git rbenv ruby_build_deps].map { |task| "install #{task}" }.
+        map(&method(:invoke))
       system %(sudo -u #{username} git clone \
         https://github.com/rbenv/ruby-build.git \
         #{Etc.getpwnam(username).dir}/.rbenv/plugins/ruby-build
       )
     end
 
-    desc 'docker', 'installs docker'
-    def docker
-      %w[apt_update install:curl].map(&method(:invoke))
-      system 'apt install -y apt-transport-https ca-certificates software-properties-common'
-      system 'curl -fsSL https://download.docker.com/libux/ubuntu/gpg | apt-key add -'
-      system 'add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu bionic stable"'
-      apt_update # hard requirement
-      system 'apt install -y docker-ce'
-    end
+    desc 'spacevim [USERNAME]', 'installs spacevim for the given user'
+    def spacevim(username); end
   end
   # class for interacting with the end-user
   # it's okay, they do not bite (usually)
@@ -196,19 +232,7 @@ module Enkaironment
       end
     end
 
-    desc 'apt_update', 'runs apt update (as a task, so that other tasks can invoke it)'
-    # runs apt update
-    # theoretically this could be an 'update sources' method, in order to
-    # support multiple OSes. Other install tasks could be written such that
-    # they added items to an install list, similar to how `invoke` works.
-    # I don't currently have any intention of doing this.
-    def apt_update
-      # hopefully this actually works
-      ENV['DEBIAN_FRONTEND'] = 'noninteractive'
-      system 'apt update'
-    end
     desc 'install', 'installation commands'
     subcommand :install, Enkaironment::Install
   end
-
 end
