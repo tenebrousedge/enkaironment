@@ -12,3 +12,7 @@ Metrics/LineLength:
   Max: 120
 Layout/TrailingWhitespace:
   AllowInHeredoc: true
+# I don't always copy and paste code from a file to a pry REPL
+# but when I do, I need the trailing period, or it doesn't work
+Layout/DotPosition:
+  EnforcedStyle: "trailing"

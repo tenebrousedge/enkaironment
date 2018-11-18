@@ -5,13 +5,14 @@ require 'test_helper'
 describe Enkaironment::CLI, 'It handles CLI interactions' do
   before do
     @term = HighLine.new(*[0, 1].map { StringIO.new })
-    @cli = Enkaironment::CLI.new(@term)
+    @cli = Enkaironment::CLI.new
+    @cli.instance_variable_set(:@hl, @term)
   end
 
   it 'asks for a username' do
     # this test should sufficiently test the normal input path
     @term.input.<<('test_username').rewind
-    name = @cli.ask_username
+    name = @cli.username
     assert_equal(name, 'test_username')
   end
 
@@ -29,7 +30,7 @@ describe Enkaironment::CLI, 'It handles CLI interactions' do
   # and the hyphen should not be used as the first character
   it 'does not accept non-POSIX usernames' do
     @term.input.<<("inv@lid\nvalid\n").rewind
-    assert_equal('valid', @cli.ask_username)
+    assert_equal('valid', @cli.username)
     expected = "Please enter a POSIX-compatible username.\nYour answer isn't \
 valid (must match /^(?!-)[\\w.-]+$/).\n?  "
     assert_equal(expected, @term.output.string)
