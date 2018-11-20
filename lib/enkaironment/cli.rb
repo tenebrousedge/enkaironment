@@ -89,6 +89,12 @@ module Enkaironment
       install 'neovim'
     end
 
+    desc 'ag', 'install the silver searcher'
+    # installs the ag utility
+    def ag
+      install 'silversearcher-ag'
+    end
+
     class_option :username, type: :string
     desc 'zsh [USERNAME]', 'install zsh (and make it the default)'
     # installs zsh
@@ -141,8 +147,26 @@ module Enkaironment
       )
     end
 
+    desc 'ruby [USERNAME] [VERSION]', 'installs ruby using rbenv'
+    method_option :version, type: :string, default: '2.5.1'
+    # installs ruby using rb-env
+    def ruby(username, version = '2.5.1')
+      system "sudo -u #{username} rbenv install #{version}"
+    end
+
     desc 'spacevim [USERNAME]', 'installs spacevim for the given user'
-    def spacevim(username); end
+    # Installs spacevim for a given user
+    # @param username [String]
+    def spacevim(username)
+      system "sudo -u #{username} " + `curl -sLf https://spacevim.org/install.sh`
+    end
+
+    desc 'ssh_keygen [USERNAME] [FILENAME]', 'generates a SSH keypair'
+    method_option :filename, type: :string, default: '~/.ssh/id_rsa'
+    # Generates a SSH keypair
+    def ssh_keygen(username, filename = '~/.ssh/id_rsa')
+      system "sudo -u #{username} ssh-keygen -f #{filename}"
+    end
   end
   # class for interacting with the end-user
   # it's okay, they do not bite (usually)
@@ -230,6 +254,16 @@ module Enkaironment
           #{USERNAME} ALL = NOPASSWD: COMMON
         SUDOFILE
       end
+    end
+
+    desc 'setup', 'perform all setup and installation tasks'
+    # Install all the things
+    def setup(_username, _password)
+      ['create_user',
+       'add_user_to_sudo',
+       'allow_passwordless_sudo',
+       *%w[git curl prezto rbenv docker docker_compose neovim spacevim ag].map { |e| "install_#{e}" },
+       'ssh_keygen'].map(&method(:invoke))
     end
 
     desc 'install', 'installation commands'
