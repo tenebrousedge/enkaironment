@@ -4,10 +4,10 @@ require 'bundler/gem_tasks'
 require 'rake/testtask'
 
 desc 'It has all the tests'
-Rake::TestTask.new(:testsuite) do |t|
+Rake::TestTask.new(:test) do |t|
   t.libs << 'test'
   t.libs << 'lib'
   t.test_files = FileList['test/**/*_test.rb']
 end
 
-task default: :testsuite
+task default: :test

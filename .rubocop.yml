@@ -7,9 +7,12 @@ AllCops:
   TargetRubyVersion: 2.5
 Lint/AmbiguousBlockAssociation:
   Exclude:
-    - "spec/**/*"
+    - "test/**/*"
 Metrics/LineLength:
   Max: 120
+Metrics/BlockLength:
+  Exclude:
+    - "test/**/*.rb"
 Layout/TrailingWhitespace:
   AllowInHeredoc: true
 # I don't always copy and paste code from a file to a pry REPL
