@@ -53,18 +53,26 @@ There are several important bugs known at the time of this writing. Check the Is
 Right now, the way to develop this would be to clone the repo, then run `bundle install` to install dependencies. One can then use `rubyc` to compile a binary. The Dockerfile can also be used for compilation and testing.
 There are a few automated tests, but this code mostly consists of "side effects". In point of fact, it's mostly shell commands with a small Ruby wrapper.
 
-  Simplicio: So why not write a Bash script?
-  Kai: Bash is the wrong language for most nontrivial applications.
-  Simplicio: You're sure that excludes this usage?
-  Kai: Some things would be easier, but I really don't like working with Bash.
-  Simplicio: Fair enough. But does that make Ruby the right solution?
-  Kai: Actually no, this should be translated into Crystal, but I wanted to start with something I was familiar with.
-  Simplicio: Wait, so you're talking about rewriting this? Already?
-  Kai: Probably every project should be thrown away at about 90% completion. If you don't want to, you didn't learn anything while doing it. But in this case, Ruby is the wrong tool.
-  Simplicio: So what does that mean for any poor fools who might want to work with this code?
-  Kai: This is a dead end in some senses. Ruby code seems to be pretty directly translatable into Crystal, but it's probably best to just report bugs as you find them, and wait for the next version.
-  Simplicio: You know, this kinda makes sense in context, but I think you might deserve this "Simplicio" sobriquet a bit more.
-  Kai: Ouch. Well, if coding isn't a lesson in humility, it probably will be soon enough. Either way, this will be better in the future.
+>  *Simplicio*: So why not write a Bash script?
+>  *Kai*: Bash is the wrong language for most nontrivial applications.
+>  *Simplicio*: You're sure that excludes this usage?
+>  *Kai*: Some things would be easier, but I really don't like working with Bash.
+>  *Simplicio*: Fair enough. But does that make Ruby the right solution?
+>  *Kai*: Actually no, this should be translated into Crystal, but I wanted to
+>  start with something I was familiar with.
+>  *Simplicio*: Wait, so you're talking about rewriting this? Already?
+>  *Kai*: Probably every project should be thrown away at about 90% completion.
+>  If you don't want to, you didn't learn anything while doing it. But in
+>  this case, Ruby is the wrong tool.
+>  *Simplicio*: So what does that mean for any poor fools who might want to work
+>  with this code?
+>  *Kai*: This is a dead end in some senses. Ruby code seems to be pretty
+>  directly translatable into Crystal, but it's probably best to just report
+>  bugs as you find them, and wait for the next version.
+>  *Simplicio*: You know, this kinda makes sense in context, but I think you
+>  might deserve this "Simplicio" sobriquet a bit more.
+>  *Kai*: Ouch. Well, if coding isn't a lesson in humility, it probably will be
+>  soon enough. Either way, this will be better in the future.
 
 ## Contributing
 
