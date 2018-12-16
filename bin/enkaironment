@@ -1,9 +1,8 @@
 #!/usr/bin/env ruby
 # encoding: UTF-8
 
-require 'bundler'
+require 'bundler/setup'
 
-Bundler.setup
 # add self to lib path
 enkaironment_directory = File.expand_path('..', __dir__)
 #puts enkaironment_directory
