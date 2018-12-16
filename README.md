@@ -32,7 +32,7 @@ Finally, it creates a new ssh keypair for the newly created user.
 
 ## Installation
 
-Download the executable to any directory.
+[Download the executable](https://github.com/tenebrousedge/enkaironment/releases/download/v0.1.0/enkaironment) to any directory.
 
 ## Usage
 
